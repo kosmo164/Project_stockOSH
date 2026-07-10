@@ -255,7 +255,13 @@
                 alert("백엔드 서버와 통신 중 오류가 발생했습니다.");
             });
     }
-
+    // 💡여기에 쏙 끼워 넣어 줍니다! (loadChart와 window.onload 사이)
+    document.getElementById('tickerInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 엔터키로 인한 페이지 새로고침(먹통 현상) 방지
+            loadChart();            // 위에 정의된 차트 로드 함수 실행!
+        }
+    });
     window.onload = function() {
         loadChart();
     };
