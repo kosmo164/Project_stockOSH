@@ -64,8 +64,8 @@ def get_historical_data(ticker):
     df['Upper'] = df['MA20'] + (df['STD20'] * 2)
     df['Lower'] = df['MA20'] - (df['STD20'] * 2)
     # --------------------------------------------------------------------------
-
-    df['Month'] = df['Date'].dt.to_period('M')
+# ⚠️ 수정 코드 (타임존 제거 후 'YYYY-MM' 문자열로 변환)
+    df['Month'] = df['Date'].dt.tz_localize(None).dt.strftime('%Y-%m')
     
     # 월별로 그룹화할 때 종가뿐만 아니라 볼린저 밴드 지표값들의 평균도 함께 연산
     monthly_avg = df.groupby('Month')[[close_col, 'MA20', 'Upper', 'Lower']].mean().reset_index()
