@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>역사적 주가 vs ML 예측 비교</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    
     <style>
         body { background-color: #f8f9fa; font-family: 'Malgun Gothic', sans-serif; }
         .dashboard-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 2rem; border-radius: 0 0 15px 15px; margin-bottom: 2rem; }
@@ -70,14 +73,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="mt-2 text-muted fw-semibold" style="font-size: 0.8rem;">
-                            📌 <b>티커 검색이 필요할 때:</b> 내가 찾는 종목의 정확한 코드를 모른다면 
-                            <a href="https://finance.yahoo.com/lookup/" target="_blank" class="text-primary text-decoration-underline fw-bold">
-                                [야후 파이낸스 공식 종목 검색 창 🔍]
-                            </a> 메뉴에서 기업명을 입력해 쉽게 찾을 수 있습니다.
-                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -95,6 +91,9 @@
     </div>
 
 <script>
+    // 💡 [핵심 추가] Chart.js 엔진에 줌 플러그인을 글로벌하게 강제 등록합니다.
+    Chart.register(ChartZoom);
+
     let stockChart = null;
 
     function loadChart() {
@@ -120,7 +119,6 @@
                     stockChart.destroy();
                 }
 
-                // 💡 원래 어떤 통화였고, 환율이 얼마 적용되었는지 서브라벨 생성
                 let subLabel = "원화(KRW)로 환산된 차트입니다.";
                 if (data.currency !== 'KRW') {
                     subLabel = `오리지널 통화: ${data.currency} (적용 환율: 1 ${data.currency} = ${data.rate_applied}원)`;
@@ -138,7 +136,8 @@
                                 backgroundColor: 'rgba(78, 115, 223, 0.05)',
                                 fill: true,
                                 tension: 0.1,
-                                pointRadius: 1
+                                pointRadius: 1,
+                                order: 1
                             },
                             {
                                 label: `${ticker} AI 예측 주가 (과거~미래12M)`,
@@ -147,13 +146,63 @@
                                 borderDash: [6, 4],
                                 fill: false,
                                 tension: 0.1,
-                                pointRadius: 1
+                                pointRadius: 1,
+                                order: 2
+                            },
+                            {
+                                label: '볼린저 상단 (Upper)',
+                                data: data.bb_upper,
+                                borderColor: 'rgba(128, 128, 128, 0.35)',
+                                borderDash: [4, 4],
+                                fill: '+1',
+                                backgroundColor: 'rgba(128, 128, 128, 0.04)',
+                                tension: 0.1,
+                                pointRadius: 0,
+                                order: 3
+                            },
+                            {
+                                label: '볼린저 하단 (Lower)',
+                                data: data.bb_lower,
+                                borderColor: 'rgba(128, 128, 128, 0.35)',
+                                borderDash: [4, 4],
+                                fill: false,
+                                tension: 0.1,
+                                pointRadius: 0,
+                                order: 4
+                            },
+                            {
+                                label: '20일 이동평균선 (MA20)',
+                                data: data.bb_ma,
+                                borderColor: 'rgba(246, 194, 62, 0.7)',
+                                fill: false,
+                                tension: 0.1,
+                                pointRadius: 0,
+                                order: 5
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        plugins: {
+                            zoom: {
+                                zoom: {
+                                    wheel: {
+                                        enabled: true,
+                                        speed: 0.08
+                                    },
+                                    pinch: {
+                                        enabled: true
+                                    },
+                                    mode: 'x',
+                                },
+                                pan: {
+                                    enabled: true,
+                                    mode: 'x',
+                                    threshold: 0
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: false,
