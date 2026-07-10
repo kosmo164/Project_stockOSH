@@ -151,5 +151,19 @@ def get_historical_vs_prediction(ticker):
         print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
+# app.py의 맨 아래쪽을 아래 코드로 교체해 주세요.
 if __name__ == '__main__':
+    import subprocess
+    import sys
+    import os
+
+    print("⚡ [시스템] 웹 서버 구동 전, 백그라운드에서 AI 예측 엔진(update_db.py)을 가동합니다...")
+    
+    # Predict_stock 폴더 안의 update_db.py 경로를 안전하게 지정
+    engine_path = os.path.join("Predict_stock", "update_db.py")
+    
+    # 💡 백그라운드 프로세스로 update_db.py 실행 (서버가 켜지면서 동시에 학습 시작)
+    subprocess.Popen([sys.executable, engine_path])
+
+    # Flask 웹 서버 실행
     app.run(debug=True, port=5000)

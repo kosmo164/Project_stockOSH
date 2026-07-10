@@ -6,10 +6,11 @@ import pymysql
 
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'stock_user',        # 👈 전용 아이디
-    'password': 'stock1234',     # 👈 전용 비밀번호
-    'db': 'stock_predict',       # 👈 아까 만든 데이터베이스 이름
+    'user': 'stock_user',
+    'password': 'stock1234',
+    'db': 'stock_predict',
     'charset': 'utf8mb4'
+    # 💡 여기서는 cursorclass를 빼주는 것이 더 안전합니다!
 }
 
 def get_prediction_data(ticker_symbol):
@@ -86,7 +87,19 @@ if __name__ == "__main__":
     my_interest_stocks = [
         ("005930.KS", "삼성전자"),
         ("000660.KS", "SK하이닉스"),
-        ("AAPL", "애플")
+        ("AAPL", "애플"),
+        ("TSLA", "테슬라"),
+        ("NVDA", "엔비디아"),
+        ("MSFT", "마이크로소프트"),
+        ("AMZN", "아마존"),
+        ("035420.KS", "NAVER"),
+        ("035720.KS", "카카오"),
+        ("051910.KS", "LG화학"),
+        ("005380.KS", "현대차"),
+        ("000270.KS", "기아"),
+        ("GOOGL", "구글"),
+        ("META", "메타"),
+        ("NFLX", "넷플릭스")
     ]
     
     print("🚀 관심 종목 주가 예측 및 DB 업데이트 시작...")
